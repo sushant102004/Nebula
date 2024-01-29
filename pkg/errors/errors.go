@@ -21,6 +21,26 @@ var (
 	UnableToFindEnvVariable = ReturnErrorResponse(map[string]string{
 		"error": "Unable to find environment variable",
 	})
+
+	UnableToUnmarshalJSON = ReturnErrorResponse(map[string]string{
+		"error": "Unable to unmarshal JSON",
+	})
+
+	UnableToConvertBase64StringToImage = ReturnErrorResponse(map[string]string{
+		"error": "Unable to convert base64 string to image",
+	})
+
+	UnableToStoreImageToS3 = ReturnErrorResponse(map[string]string{
+		"error": "Unable to store image to s3",
+	})
+
+	UnableToFindBucketNameAnywhere = ReturnErrorResponse(map[string]string{
+		"error": "Bucket name must be defined into request body of either enviroment variables",
+	})
+
+	InvalidInputBody = ReturnErrorResponse(map[string]string{
+		"error": "Invalid input body. There must be some data missing.",
+	})
 )
 
 func ReturnErrorResponse(errorData map[string]string) string {
