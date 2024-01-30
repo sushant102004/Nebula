@@ -1,0 +1,18 @@
+"filename", "language", "Makefile", "Go Checksum File", "Go", "Go Module File", "Markdown", "JSON with Comments", "JSON", "TypeScript", "JavaScript", "comment", "blank", "total"
+"/home/sushant/GoLang/Nebula/Makefile", "Makefile", 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 5
+"/home/sushant/GoLang/Nebula/README.md", "Markdown", 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 6, 18
+"/home/sushant/GoLang/Nebula/cmd/main.go", "Go", 0, 0, 3, 0, 0, 0, 0, 0, 0, 8, 3, 14
+"/home/sushant/GoLang/Nebula/go.mod", "Go Module File", 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 4, 36
+"/home/sushant/GoLang/Nebula/go.sum", "Go Checksum File", 0, 74, 0, 0, 0, 0, 0, 0, 0, 0, 1, 75
+"/home/sushant/GoLang/Nebula/internal/s3_store/handler/handler.go", "Go", 0, 0, 124, 0, 0, 0, 0, 0, 0, 34, 34, 192
+"/home/sushant/GoLang/Nebula/pkg/errors/errors.go", "Go", 0, 0, 41, 0, 0, 0, 0, 0, 0, 0, 12, 53
+"/home/sushant/GoLang/Nebula/pkg/health/health.go", "Go", 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/home/sushant/GoLang/Nebula/pkg/image_operations/dist/resize_images.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 51, 13, 1, 65
+"/home/sushant/GoLang/Nebula/pkg/image_operations/package-lock.json", "JSON", 0, 0, 0, 0, 0, 0, 627, 0, 0, 0, 1, 628
+"/home/sushant/GoLang/Nebula/pkg/image_operations/package.json", "JSON", 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 1, 25
+"/home/sushant/GoLang/Nebula/pkg/image_operations/src/app.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 1, 9
+"/home/sushant/GoLang/Nebula/pkg/image_operations/src/app.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7
+"/home/sushant/GoLang/Nebula/pkg/image_operations/src/handlers/resize_images.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 41, 0, 16, 11, 68
+"/home/sushant/GoLang/Nebula/pkg/image_operations/tsconfig.json", "JSON with Comments", 0, 0, 0, 0, 0, 10, 0, 0, 0, 91, 9, 110
+"/home/sushant/GoLang/Nebula/pkg/response/response.go", "Go", 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 4, 20
+"Total", "-", 3, 74, 185, 32, 12, 10, 651, 41, 52, 177, 90, 1327
