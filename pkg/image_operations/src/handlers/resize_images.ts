@@ -46,12 +46,12 @@ export const handler: Handler = async (event: ResizeImageEvent): Promise<APIGate
                 resizedImage: imageBuffer.toString('base64')
             })
         }
-    } catch (err) {
+    } catch (err : any) {
         return {
             statusCode: 500,
             body: JSON.stringify({
                 message: 'some error happened',
-                error : err
+                error : err.stack
             }),
         };
     }
