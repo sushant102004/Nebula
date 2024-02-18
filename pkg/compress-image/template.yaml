@@ -3,7 +3,7 @@ Transform: 'AWS::Serverless-2016-10-31'
 Description: 'Lambda function to compress image by converting it into Webp'
 
 Resources:
-  HelloWorldFunction:
+  CompressImage:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: index.handler

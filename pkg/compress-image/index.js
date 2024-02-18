@@ -23,15 +23,28 @@ exports.handler = void 0;
 const sharp_1 = __importDefault(require("sharp"));
 const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const imageContent = event.image;
+        if (!event.body) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({
+                    message: 'Provide valid input data.'
+                })
+            };
+        }
+        const eventBody = JSON.parse(event.body);
+        const imageContent = eventBody.image;
         const inputImageBuffer = base64ToArrayBuffer(imageContent);
-        const imageBuffer = yield (0, sharp_1.default)(inputImageBuffer.buffer).jpeg({
-            quality: event.quality
+        const imageBuffer = yield (0, sharp_1.default)(inputImageBuffer.buffer).webp({
+            quality: parseInt(eventBody.quality)
         }).toBuffer();
         return {
             statusCode: 200,
+            headers: {
+                'Content-Type': 'image/webp'
+            },
             body: JSON.stringify({
-                resizedImage: imageBuffer.toString('base64')
+                resizedImage: imageBuffer.toString('base64'),
+                message: 'OK'
             })
         };
     }
@@ -39,7 +52,7 @@ const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
         return {
             statusCode: 500,
             body: JSON.stringify({
-                message: 'some error happened',
+                message: 'Some error happened',
                 error: err.stack
             }),
         };
