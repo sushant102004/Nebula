@@ -27,7 +27,17 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
             }
         }
 
+
         const eventBody : RequestBody = JSON.parse(event.body)
+
+        if (eventBody.image === undefined || eventBody.quality === undefined) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({   
+                    message: 'Bad request body.'
+                })
+            }
+        }
 
         const imageContent = eventBody.image;
 

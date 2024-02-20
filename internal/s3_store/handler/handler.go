@@ -1,21 +1,20 @@
 /*
 	@author: Sushant
-	@last-modified: 29 January 2024
 	@GitHub: https://github.com/sushant102004
 
 	PoF: -
-	1. Store images to S3 -> MVP
+	1. Store images to S3
 	2. Allow user to specify whether to compress image before storing or not -> MVP
 	3. Support for multiple images. -> Future Feature
 
 	Working of this function: -
-	1. Recieve and validate request data from API Gateway.
-	2. Compress image before storing (if compress : true in request body) -> Not implemented yet. Skip to step 3.
+	1. Receive and validate request data from API Gateway.
+	2. Compress image before storing (if compress : true in request body)
 	3. Store images to S3 via multipart upload to handle large files.
 */
 
 /*
-	Enviroment variables for this function:-
+	Environment variables for this function:-
 	1. region -> Your aws region
 	2. access_key -> Your aws account access key.
 	3. secret_access_key -> Your aws account secret access key.
@@ -26,6 +25,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"os"
@@ -67,19 +67,22 @@ type RequestBody struct {
 	// The title with which this image will be stored in S3. Basically it is the Object Key.
 	// Also make sure to prefix the with some unique value to prevent accidental overwriting. If there is file with same name than
 	// S3 will overwrite the existing file
-	FileName string `json:"file_name"`
+	FileName         string `json:"file_name"`
+	BucketName       string `json:"bucket_name"`
+	ApplyCompression bool   `json:"apply_compression"`
 
-	BucketName string `json:"bucket_name"`
+	// This refers to the quality of the image after compression. Less the quality higher the compression is.
+	Quality string `json:"quality"`
 }
 
-func Handler(ctx context.Context, req RequestEvent) (*events.APIGatewayProxyResponse, error) {
+func Handler(ctx context.Context, event RequestEvent) (*events.APIGatewayProxyResponse, error) {
 	// Ignoring all the requests where method is not "POST".
-	if req.HTTPMethod != http.MethodPost {
+	if event.HTTPMethod != http.MethodPost {
 		return returnError(404, customErrors.MethodNotAllowed), nil
 	}
 
 	// Checking if any essential data is missing from request body
-	if req.Body.FileName == "" || req.Body.ImageContent == "" || req.Body.BucketName == "" {
+	if event.Body.FileName == "" || event.Body.ImageContent == "" || event.Body.BucketName == "" {
 		return returnError(400, customErrors.InvalidInputBody), nil
 	}
 
@@ -106,15 +109,80 @@ func Handler(ctx context.Context, req RequestEvent) (*events.APIGatewayProxyResp
 
 	s3Client := s3.NewFromConfig(cfg)
 
-	if err := saveToS3(ctx, s3Client, req.Body.BucketName, req.Body.FileName, req.Body.ImageContent); err != nil {
+	// Checking if user want to compress image before saving.
+
+	if event.Body.ApplyCompression == true && event.Body.Quality != "" {
+		compressImageFxUrl := os.Getenv("COMPRESS_IMAGE_FUNCTION_URL")
+		if compressImageFxUrl == "" {
+			log.Error().Msgf("compress image function url is not specified in .env file")
+			return returnError(500, customErrors.UnableToFindEnvVariable), nil
+		}
+
+		// TODO: Currently I'm keeping these structs inside function for simplicity. Later I'll place them in dedicated directory.
+		type reqBodyStruct struct {
+			Image   string `json:"image"`
+			Quality string `json:"quality"`
+		}
+
+		type responseBodyStruct struct {
+			ResizedImage string `json:"resizedImage"`
+			Message      string `json:"message"`
+		}
+
+		reqBody := reqBodyStruct{
+			Image:   event.Body.ImageContent,
+			Quality: event.Body.Quality,
+		}
+
+		var buff bytes.Buffer
+		err = json.NewEncoder(&buff).Encode(reqBody)
+		if err != nil {
+			log.Error().Msgf("unable to encode request body")
+			return returnError(500, customErrors.UnableToEncodeHTTPRequestBody), nil
+		}
+
+		httpClient := &http.Client{}
+
+		req, err := http.NewRequest("POST", compressImageFxUrl, &buff)
+		if err != nil {
+			log.Error().Msgf("unable to create 'compress image' http request")
+			return returnError(500, customErrors.UnableToCreateHTTPRequest), nil
+		}
+
+		resp, err := httpClient.Do(req)
+		if err != nil {
+			log.Error().Msgf("compress image http response err: %v", err.Error())
+			return returnError(500, customErrors.HTTPResponseError), nil
+		}
+
+		var httpResp responseBodyStruct
+
+		respBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Error().Msgf("unable to read data from HTTP response: %v", err.Error())
+			return returnError(500, customErrors.UnableToReadDataFromHTTPResponse), nil
+		}
+
+		err = json.Unmarshal(respBytes, &httpResp)
+		if err != nil {
+			log.Error().Msgf("unable to marshal json: %v", err.Error())
+			return returnError(500, customErrors.UnableToUnmarshalJSON), nil
+		}
+
+		if err := saveToS3(ctx, s3Client, event.Body.BucketName, event.Body.FileName, httpResp.ResizedImage); err != nil {
+			log.Error().Msgf("Unable to store image to S3: %v", err)
+			return returnError(500, customErrors.UnableToStoreImageToS3), nil
+		}
+
+		return &events.APIGatewayProxyResponse{StatusCode: 200, Body: response.SuccessfulResponse}, nil
+	}
+
+	if err := saveToS3(ctx, s3Client, event.Body.BucketName, event.Body.FileName, event.Body.ImageContent); err != nil {
 		log.Error().Msgf("Unable to store image to S3: %v", err)
 		return returnError(500, customErrors.UnableToStoreImageToS3), nil
 	}
 
-	return &events.APIGatewayProxyResponse{
-		StatusCode: 200,
-		Body:       response.SuccessfulResponse,
-	}, nil
+	return &events.APIGatewayProxyResponse{StatusCode: 200, Body: response.SuccessfulResponse}, nil
 }
 
 func saveToS3(ctx context.Context, s3Client *s3.Client, bucketName, objectKey, base64EncodedImage string) error {

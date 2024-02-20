@@ -4,7 +4,7 @@ version = 0.1
 
 [default]
 [default.global.parameters]
-stack_name = "compress-resize-image"
+stack_name = "compress-image"
 
 [default.build.parameters]
 cached = true
@@ -17,7 +17,7 @@ lint = true
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
-s3_prefix = "compress-resize-image"
+s3_prefix = "compress-image"
 region = "ap-south-1"
 disable_rollback = true
 image_repositories = []

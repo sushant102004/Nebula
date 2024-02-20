@@ -11,35 +11,36 @@ var (
 		"error": "unable to load AWS configuration",
 	})
 
-	UnableToConnectToS3 = ReturnErrorResponse(map[string]string{
-		"error": "Unable to connect to S3",
-	})
-
-	UnableToLoadEnv = ReturnErrorResponse(map[string]string{
-		"error": "Unable to load enviroment variables",
-	})
 	UnableToFindEnvVariable = ReturnErrorResponse(map[string]string{
 		"error": "Unable to find environment variable",
-	})
-
-	UnableToUnmarshalJSON = ReturnErrorResponse(map[string]string{
-		"error": "Unable to unmarshal JSON",
-	})
-
-	UnableToConvertBase64StringToImage = ReturnErrorResponse(map[string]string{
-		"error": "Unable to convert base64 string to image",
 	})
 
 	UnableToStoreImageToS3 = ReturnErrorResponse(map[string]string{
 		"error": "Unable to store image to s3",
 	})
 
-	UnableToFindBucketNameAnywhere = ReturnErrorResponse(map[string]string{
-		"error": "Bucket name must be defined into request body of either enviroment variables",
-	})
-
 	InvalidInputBody = ReturnErrorResponse(map[string]string{
 		"error": "Invalid input body. There must be some data missing.",
+	})
+
+	UnableToEncodeHTTPRequestBody = ReturnErrorResponse(map[string]string{
+		"error": "unable to encode http request body",
+	})
+
+	UnableToCreateHTTPRequest = ReturnErrorResponse(map[string]string{
+		"error": "unable to create HTTP request",
+	})
+
+	HTTPResponseError = ReturnErrorResponse(map[string]string{
+		"error": "HTTP Request failed. Check logs for more details",
+	})
+
+	UnableToReadDataFromHTTPResponse = ReturnErrorResponse(map[string]string{
+		"error": "unable to read data from HTTP response",
+	})
+
+	UnableToUnmarshalJSON = ReturnErrorResponse(map[string]string{
+		"error": "unable to unmarshal json",
 	})
 )
 
